@@ -46,5 +46,5 @@ my_transforms = Compose([
     Normalize((.5, .5, .5), (.5, .5, .5))
 ])
 
-my_dataset = "/home/t/tianqi/CS4243_proj/dataset/splitted"
+my_dataset = MyDataset("/home/t/tianqi/CS4243_proj/dataset/splitted", my_transforms)
 my_dataloader = DataLoader(my_dataset, batch_size=64, shuffle=True, drop_last=False)
