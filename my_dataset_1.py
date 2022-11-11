@@ -39,6 +39,7 @@ class MyDataset(Dataset):
     def __getitem__(self, idx):
         img_path, label = self.imgs[idx]
         # print(label)
+        print(img_path)
         my_image = MyImage(img_path, label)
         r_masked = self.transforms(my_image.seg_masked)
         r_pose = my_image.pose
