@@ -28,7 +28,7 @@ class MyDataset(Dataset):
         for subfolder in os.listdir(folder):
             subdir = os.path.join(folder, subfolder)
             imgs_now = os.listdir(subdir)
-            imgs_labeled = list(map(lambda x: (x, class_dict[subfolder]),imgs_now))
+            imgs_labeled = list(map(lambda x: (os.path.join(subdir, x), subfolder),imgs_now))
             imgs = imgs + imgs_labeled
         self.imgs = imgs
         self.transforms = transforms
@@ -38,13 +38,13 @@ class MyDataset(Dataset):
         
     def __getitem__(self, idx):
         img_path, label = self.imgs[idx]
+        # print(label)
         my_image = MyImage(img_path, label)
-        r_img = self.transforms(my_image.img)
         r_masked = self.transforms(my_image.seg_masked)
         r_pose = my_image.pose
         r_weapon = my_image.weapon_c
-        r_id = label
-        return r_img, r_masked, r_pose, r_weapon, r_id
+        r_id = my_image.c_id
+        return r_masked, r_pose, r_weapon, r_id
         
 data_transforms = Compose([
     Resize((64, 64)),
@@ -55,10 +55,10 @@ data_transforms = Compose([
 
 image_datasets = {
     'train': MyDataset("/home/t/tianqi/CS4243_proj/dataset/splitted/train", data_transforms),
-    'val': MyDataset("/home/t/tianqi/CS4243_proj/dataset/splitted/train", data_transforms),
+    'val': MyDataset("/home/t/tianqi/CS4243_proj/dataset/splitted/val", data_transforms),
     'test': MyDataset("/home/t/tianqi/CS4243_proj/dataset/splitted/test", data_transforms)
 }
-dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=32,
-                                             shuffle=True, num_workers=4)
+dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=1,
+                                             shuffle=True)
               for x in ['train', 'val', 'test']}
 # my_dataloader = DataLoader(my_dataset, batch_size=64, shuffle=True, drop_last=False)
