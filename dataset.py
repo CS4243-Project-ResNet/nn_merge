@@ -26,3 +26,4 @@ class MyDataset(Dataset):
         return random_split(self, [train_size, test_size])
         
 loader = DataLoader()
+
