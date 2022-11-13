@@ -3,6 +3,7 @@ import torch.nn as nn
 
 class PoseMLP(nn.Module):
     def __init__(self, in_mlp, out_mlp):
+        super(PoseMLP, self).__init__()
         self.mlp = nn.Sequential(
             nn.Linear(in_mlp, 2*in_mlp),
             nn.ELU(),
@@ -15,6 +16,7 @@ class PoseMLP(nn.Module):
 
     def forward(self, x):
         x = self.mlp(x)
+        return x
 
 
 # class StackModel(nn.Module):

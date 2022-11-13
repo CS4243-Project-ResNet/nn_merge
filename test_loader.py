@@ -25,7 +25,7 @@ import copy
 import my_dataset_1
 
 
-cudnn.benchmark = True
+# cudnn.benchmark = True
 
 image_datasets = my_dataset_1.image_datasets
 dataloaders = my_dataset_1.dataloaders
@@ -34,4 +34,5 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 train_loader = dataloaders['train']
 batch = next(iter(train_loader))
-print(batch)
+print(batch[1])
+print(batch[1].size())

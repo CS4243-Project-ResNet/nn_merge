@@ -3,6 +3,8 @@ import torch
 import torch.nn
 from torch.utils.data import Dataset, DataLoader
 from torchvision.transforms import Compose, Resize, ToTensor, RandomHorizontalFlip, CenterCrop, Normalize
+import numpy as np
+from PIL import Image
 
 import sys
 
@@ -14,6 +16,7 @@ from my_utils.my_image import MyImage
 import my_utils.seg as seg
 import my_utils.get_pose as pose
 import my_utils.get_yolov5 as weapon
+from baseline.seg_resnet import mask_img_with_box
 
 class_dict = {
     "carrying": 0,
@@ -39,10 +42,11 @@ class MyDataset(Dataset):
     def __getitem__(self, idx):
         img_path, label = self.imgs[idx]
         # print(label)
-        print(img_path)
+        # print(img_path)
         my_image = MyImage(img_path, label)
+        r_img = self.transforms(my_image.img_t)
         r_masked = self.transforms(my_image.seg_masked)
-        r_pose = my_image.pose
+        r_pose = np.pad(my_image.pose.astype(np.float32), (0, 201-len(my_image.pose)), 'constant')
         r_weapon = my_image.weapon_c
         r_id = my_image.c_id
         return r_masked, r_pose, r_weapon, r_id
@@ -59,7 +63,7 @@ image_datasets = {
     'val': MyDataset("/home/t/tianqi/CS4243_proj/dataset/splitted/val", data_transforms),
     'test': MyDataset("/home/t/tianqi/CS4243_proj/dataset/splitted/test", data_transforms)
 }
-dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=1,
-                                             shuffle=True)
+dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=16,
+                                             shuffle=True, num_workers=3)
               for x in ['train', 'val', 'test']}
 # my_dataloader = DataLoader(my_dataset, batch_size=64, shuffle=True, drop_last=False)
